@@ -1,12 +1,11 @@
 import sqlite3
-from datetime import datetime
-
 import click
 from flask import current_app, g
 from flask.cli import with_appcontext
 
-# learn how to use the native flask way of accessing databases
 # https://flask.palletsprojects.com/en/1.1.x/tutorial/database/
+
+# opens up and connects to a database if it's not already open
 def get_db():
     if 'db' not in g:
         g.db = sqlite3.connect(
@@ -17,20 +16,21 @@ def get_db():
 
     return g.db
 
-
+# close the database if it's open
 def close_db(e=None):
     db = g.pop('db', None)
 
     if db is not None:
         db.close()
 
+# open database and run the schema.sql script 
 def init_db():
     db = get_db()
 
     with current_app.open_resource('schema.sql') as f:
         db.executescript(f.read().decode('utf8'))
 
-
+# drop and recreate database with "flask init-db" in cli
 @click.command('init-db')
 @with_appcontext
 def init_db_command():
@@ -38,6 +38,7 @@ def init_db_command():
     init_db()
     click.echo('Initialized the database.')
 
+# create database instance 
 def init_app(app):
     app.teardown_appcontext(close_db)
     app.cli.add_command(init_db_command)

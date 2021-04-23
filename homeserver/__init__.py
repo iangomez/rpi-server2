@@ -1,8 +1,8 @@
 import os
+from flask import Flask, render_template
 
-from flask import Flask
-
-
+# https://flask.palletsprojects.com/en/1.1.x/patterns/appfactories/
+# application factory way of creating flask site
 def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
@@ -24,14 +24,19 @@ def create_app(test_config=None):
     except OSError:
         pass
 
+    # create database when we make an app
     from . import db
     db.init_app(app)
 
+    # https://flask.palletsprojects.com/en/1.1.x/appcontext/
+    # holds useful values that live when the application is alive
+    # usually exists as long as a request context exists
     with app.app_context():
 
         from . import data
+
+        # register our data blueprint and ensure that it's the index of our site
         app.register_blueprint(data.bp)
         app.add_url_rule('/', endpoint='index')
-
 
     return app
