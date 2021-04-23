@@ -2,7 +2,9 @@ from flask import (
     Blueprint, flash, g, redirect, render_template, request, session, url_for
 )
 
-import homeserver.db as dbf  # import some useful database functions
+# import some useful database and data processing functions
+import homeserver.db as dbf  
+import homeserver.processData as pdf
 
 # create a "blueprint", i.e., this will hold all the webpages that are about data
 # it does not have a url prefix, so our data page is the index of the website
@@ -12,17 +14,7 @@ bp = Blueprint('data', __name__)
 # shows a dashboard of all logged temperature values
 @bp.route('/')
 def data():
-    db = dbf.get_db() #  open database for this request
-
-    # pull all data from shower
-    rows = db.execute('SELECT * from shower').fetchall()
-
-    # print all rows from shower
-    s = ""
-    for row in rows:
-        s = s + str(row['temperature']) + "\n\n"
-
-    return(s)
+    return pdf.bokehDash()
 
 # GET: this page will show information about the past hour or so. allows us to get specific about our currrent shower
 # POST: add the data request to our database
@@ -52,5 +44,4 @@ def shower():
         
         db.commit()  # save info in database
 
-        return(f'{temperature}')
-
+        return(f'POST received: temperature {temperature} F')
