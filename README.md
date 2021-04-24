@@ -2,7 +2,7 @@
 
 ## IoT Architecture
 Python + Flask + SQLite + Bokeh plots
-![Homeserver IoT](https://user-images.githubusercontent.com/11139566/115975541-a9771180-a533-11eb-853d-d59f0dc83720.png)
+![Homeserver IoT updated](https://user-images.githubusercontent.com/11139566/115975632-56518e80-a534-11eb-88a2-ded63e1244db.png)
 
 ## Shower temperature plot
 ![shower2](https://user-images.githubusercontent.com/11139566/115975003-1e941800-a52f-11eb-9693-f396d3428f5a.png)
