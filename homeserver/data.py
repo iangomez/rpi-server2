@@ -14,7 +14,7 @@ bp = Blueprint('data', __name__)
 # shows a dashboard of all logged temperature values
 @bp.route('/')
 def data():
-    return pdf.bokehDash()
+    return pdf.bokehDash(xMax = 2500)
 
 # GET: this page will show information about the past hour or so. allows us to get specific about our currrent shower
 # POST: add the data request to our database
@@ -24,24 +24,25 @@ def shower():
 
     # display webpage
     if request.method == 'GET':
-        # pull latest info out of database
-        row = db.execute('SELECT max(id) as latest, date, temperature from shower').fetchone()
-        
-        t = row['temperature']
-        return(f'{t}')
-
+        return pdf.bokehDash(autorefresh=True)
+    
     # responds to our microcontroller sending temperature data
     if request.method == "POST":
+
         # pull temperature out of POST request
         temperature = request.form.get('temperature')
 
-        # shower db, id automatically increments, datetime is now, temperature is from POST
-        db.execute(
-            "INSERT INTO shower (date, temperature)"
-            " VALUES (datetime('now', 'localtime'), ?)",
-            (temperature,)
-        )        
-        
-        db.commit()  # save info in database
+        if temperature:
+            temperature = float(temperature)
+            print(f'Reported temperature: {temperature} F')
 
-        return(f'POST received: temperature {temperature} F')
+            # shower db, id automatically increments, datetime is now, temperature is from POST
+            db.execute(
+                "INSERT INTO shower (date, temperature)"
+                " VALUES (datetime('now', 'localtime'), ?)",
+                (temperature,)
+            )        
+            
+            db.commit()  # save info in database
+
+        return(f'POST received. Temperature = {temperature} F')

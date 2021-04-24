@@ -2,13 +2,17 @@ from flask import current_app, g, render_template
 from flask.cli import with_appcontext
 import homeserver.db as dbf
 # bokeh imports
-from bokeh.models import ColumnDataSource
+from bokeh.models import ColumnDataSource, Range1d
 from bokeh.plotting import figure
 from bokeh.embed import components
 from bokeh.plotting import figure
 from bokeh.resources import INLINE
+from bokeh.io import curdoc
 
-def bokehDash():
+import numpy as np
+
+
+def bokehDash(xMax = None, autorefresh=False):
     # set up bokeh source
     source = ColumnDataSource()
 
@@ -19,24 +23,30 @@ def bokehDash():
     # error check data?
     id   = [row['id'] for row in rows]
     date = [row['date'] for row in rows]
-    temp = [row['temperature'] for row in rows]
+    temp = [float(row['temperature']) for row in rows]
 
-    print(date)
+    xAvg, yAvg = calculateRollingAverage(id, temp, samples=15)
 
     # make array of shower data for dict
     source.data = dict(
         x = id,
         y = temp,
+        date = date,
     )
 
-    # create figure
-    fig = figure(plot_height=600, plot_width=720, #x_axis_type='datetime',
-                tooltips=[("Date", "@x"), ("Temperature F", "@y")])
-    fig.circle(x="x", y="y", source=source, size=8)
-    fig.line(x="x", y="y", source=source, line_width=2)
+    curdoc().theme = 'dark_minimal'
 
-    fig.xaxis.axis_label = "Time"
-    fig.yaxis.axis_label = "Temperature"
+    # create figure
+    fig = figure(plot_height=600, plot_width=720,
+                tooltips=[("Date", "@date"), ("Temperature F", "@y"), ("Id", "@x")])
+    if xMax:  # if specified x maximum, set on figure
+        fig.x_range=Range1d(0, xMax)
+
+    fig.circle(x="x", y="y", source=source, size=1)
+    fig.line(x=xAvg, y=yAvg, line_width=2, line_color="red")
+
+    fig.xaxis.axis_label = "Time (seconds)"
+    fig.yaxis.axis_label = "Temperature (degrees F)"
 
     # grab the static resources
     js_resources = INLINE.render_js()
@@ -50,5 +60,26 @@ def bokehDash():
         plot_div=div,
         js_resources=js_resources,
         css_resources=css_resources,
+        autorefresh=autorefresh
     )
     return html
+
+def calculateRollingAverage(x, y, samples=10):
+    counter = 0
+    avgArr = []
+    xAvg = [x[0]]
+    yAvg = [y[0]]
+
+    for i,j in zip(x, y):
+        
+        avgArr.append(j)
+        
+        if counter >= samples:
+            xAvg.append(i)
+            yAvg.append(np.mean(avgArr))
+            counter = 0
+            avgArr = []
+        
+        counter += 1
+
+    return xAvg, yAvg
