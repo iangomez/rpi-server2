@@ -8,11 +8,11 @@ Python + Flask + SQLite + Bokeh plots
 ![shower2](https://user-images.githubusercontent.com/11139566/115975003-1e941800-a52f-11eb-9693-f396d3428f5a.png)
 
 ## Todos
-Deploy to production
-Dark mode
-Derivatives and current average temperature
-Add start/stop record
-Save shower session? 
+- Deploy to production
+- Dark mode
+- Derivatives and current average temperature
+- Add start/stop record
+- Save shower session? 
 
 ## Helpful Things
 ### Test POST in Linux
