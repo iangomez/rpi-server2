@@ -19,6 +19,6 @@ Python + Flask + SQLite + Bokeh plots
 curl -X POST -F 'temperature=50' localhost:5000/shower
 
 ### Debug server commands
-export FLASK_APP=homeserver
-export FLASK_ENV=development
-flask run --host=0.0.0.0 --port=5000
+- export FLASK_APP=homeserver
+- export FLASK_ENV=development
+- flask run --host=0.0.0.0 --port=5000
