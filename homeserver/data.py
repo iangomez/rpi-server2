@@ -14,7 +14,18 @@ bp = Blueprint('data', __name__)
 # shows a dashboard of all logged temperature values
 @bp.route('/')
 def data():
-    return pdf.bokehDash()
+
+    bokehOut = pdf.bokehDash()
+
+    html = render_template(
+        'dashboard.html',
+        plot_script=bokehOut['plot_script'],
+        plot_div=bokehOut['plot_div'],
+        js_resources=bokehOut['js_resources'],
+        css_resources=bokehOut['css_resources'],
+    )
+
+    return html
 
 # GET: this page will show information about the past hour or so. allows us to get specific about our currrent shower
 # POST: add the data request to our database
@@ -24,13 +35,26 @@ def shower():
 
     # display webpage
     if request.method == 'GET':
-        return pdf.bokehDash(autorefresh=True)
+
+        bokehOut = pdf.bokehDash()
+
+        html = render_template(
+            'dashboard.html',
+            plot_script=bokehOut['plot_script'],
+            plot_div=bokehOut['plot_div'],
+            js_resources=bokehOut['js_resources'],
+            css_resources=bokehOut['css_resources'],
+            autorefresh=True
+        )
+        
+        return html
     
     # responds to our microcontroller sending temperature data
     if request.method == "POST":
 
         # pull temperature out of POST request
         temperature = request.form.get('temperature')
+        temperature = float(temperature)
 
         if temperature and temperature > 80:
             print(f'Reported temperature: {temperature} F')
@@ -57,4 +81,4 @@ def purgeDb():
 
 @bp.route('/test')
 def test():
-    return render_template('dashboard.html')
+    return render_template('base.html')

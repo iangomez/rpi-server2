@@ -12,55 +12,60 @@ from bokeh.io import curdoc
 import numpy as np
 
 
-def bokehDash(xMax = None, autorefresh=False):
+def bokehDash(xMax = None):
     # set up bokeh source
     source = ColumnDataSource()
 
     # open database and pull everything
     db = dbf.get_db()
     rows = db.execute('SELECT * from shower').fetchall()
-    
+
     # error check data?
     id   = [row['id'] for row in rows]
     date = [row['date'] for row in rows]
     temp = [float(row['temperature']) for row in rows]
 
-    xAvg, yAvg = calculateRollingAverage(id, temp, samples=15)
+    if id:
 
-    # make array of shower data for dict
-    source.data = dict(
-        x = id,
-        y = temp,
-        date = date,
-    )
+        xAvg, yAvg = calculateRollingAverage(id, temp, samples=15)
 
-    # create figure
-    fig = figure(plot_height=600, plot_width=720,
-                tooltips=[("Date", "@date"), ("Temperature F", "@y"), ("Id", "@x")])
-    if xMax:  # if specified x maximum, set on figure
-        fig.x_range=Range1d(0, xMax)
+        # make array of shower data for dict
+        source.data = dict(
+            x = id,
+            y = temp,
+            date = date,
+        )
 
-    fig.circle(x="x", y="y", source=source, size=1)
-    fig.line(x=xAvg, y=yAvg, line_width=2, line_color="red")
+        # create figure
+        fig = figure(plot_height=600, plot_width=720,
+                    tooltips=[("Date", "@date"), ("Temperature F", "@y"), ("Id", "@x")])
+        if xMax:  # if specified x maximum, set on figure
+            fig.x_range=Range1d(0, xMax)
 
-    fig.xaxis.axis_label = "Time (seconds)"
-    fig.yaxis.axis_label = "Temperature (degrees F)"
+        fig.circle(x="x", y="y", source=source, size=1)
+        fig.line(x=xAvg, y=yAvg, line_width=2, line_color="red")
 
-    # grab the static resources
-    js_resources = INLINE.render_js()
-    css_resources = INLINE.render_css()
+        fig.xaxis.axis_label = "Time (seconds)"
+        fig.yaxis.axis_label = "Temperature (degrees F)"
 
-    # render template
-    script, div = components(fig)
-    html = render_template(
-        'bokeh.html',
-        plot_script=script,
-        plot_div=div,
-        js_resources=js_resources,
-        css_resources=css_resources,
-        autorefresh=autorefresh
-    )
-    return html
+        # grab the static resources
+        js_resources = INLINE.render_js()
+        css_resources = INLINE.render_css()
+        # make plot html
+        script, div = components(fig)
+
+        bokehPlot = dict(
+            plot_script=script,
+            plot_div=div,
+            js_resources=js_resources,
+            css_resources=css_resources,
+        )
+
+        return bokehPlot
+
+    else:
+        return("Empty database")
+
 
 def calculateRollingAverage(x, y, samples=10):
     # reset after max samples taken
