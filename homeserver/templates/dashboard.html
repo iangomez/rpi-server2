@@ -18,4 +18,9 @@
     {% if plot_div %}
         {{ plot_div|indent(4)|safe }}
     {% endif %}
+
+    {% if emptyDbMessage %}
+        {{ emptyDbMessage }}
+    {% endif %}
+
 {% endblock %}

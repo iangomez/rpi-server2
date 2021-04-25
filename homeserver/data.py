@@ -16,14 +16,19 @@ bp = Blueprint('data', __name__)
 def data():
 
     bokehOut = pdf.bokehDash()
-
-    html = render_template(
-        'dashboard.html',
-        plot_script=bokehOut['plot_script'],
-        plot_div=bokehOut['plot_div'],
-        js_resources=bokehOut['js_resources'],
-        css_resources=bokehOut['css_resources'],
-    )
+    if bokehOut:
+        html = render_template(
+            'dashboard.html',
+            plot_script=bokehOut['plot_script'],
+            plot_div=bokehOut['plot_div'],
+            js_resources=bokehOut['js_resources'],
+            css_resources=bokehOut['css_resources'],
+        )
+    else: 
+        html = render_template(
+            'dashboard.html',
+            emptyDbMessage = "Empty Database"
+            )
 
     return html
 
@@ -56,7 +61,7 @@ def shower():
         temperature = request.form.get('temperature')
         temperature = float(temperature)
 
-        if temperature and temperature > 80:
+        if temperature and temperature > 90:
             print(f'Reported temperature: {temperature} F')
 
             # shower db, id automatically increments, datetime is now, temperature is from POST

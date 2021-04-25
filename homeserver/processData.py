@@ -64,7 +64,7 @@ def bokehDash(xMax = None):
         return bokehPlot
 
     else:
-        return("Empty database")
+        return(None)
 
 
 def calculateRollingAverage(x, y, samples=10):
