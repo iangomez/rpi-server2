@@ -34,8 +34,6 @@ def bokehDash(xMax = None, autorefresh=False):
         date = date,
     )
 
-    curdoc().theme = 'dark_minimal'
-
     # create figure
     fig = figure(plot_height=600, plot_width=720,
                 tooltips=[("Date", "@date"), ("Temperature F", "@y"), ("Id", "@x")])
@@ -65,15 +63,23 @@ def bokehDash(xMax = None, autorefresh=False):
     return html
 
 def calculateRollingAverage(x, y, samples=10):
+    # reset after max samples taken
     counter = 0
+    
+    # collect samples to average; resets after max number of samples appended
     avgArr = []
+    
+    # populate the final rolling average line with these values
     xAvg = [x[0]]
     yAvg = [y[0]]
 
+    # go through each x and y pair
     for i,j in zip(x, y):
         
+        # load avgArr with samples
         avgArr.append(j)
         
+        # once we have the required number of samples, take the average and reset
         if counter >= samples:
             xAvg.append(i)
             yAvg.append(np.mean(avgArr))

@@ -11,7 +11,7 @@
 
 // WiFi the ESP connects to
 const char* ssid = "Little Wood";  // Enter SSID here
-const char* password = "Udontdeserve1t";  //Enter Password 
+const char* password = "dummy";  //Enter Password 
 
 // Server on WiFi we want to send outgoing POST requests to
 String serverName = "http://192.168.1.121:5000/shower";
