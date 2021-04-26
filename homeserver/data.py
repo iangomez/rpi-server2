@@ -43,15 +43,23 @@ def shower():
 
         bokehOut = pdf.bokehDash()
 
-        html = render_template(
-            'dashboard.html',
-            plot_script=bokehOut['plot_script'],
-            plot_div=bokehOut['plot_div'],
-            js_resources=bokehOut['js_resources'],
-            css_resources=bokehOut['css_resources'],
-            autorefresh=True
-        )
-        
+        if bokehOut:
+            html = render_template(
+                'shower.html',
+                plot_script=bokehOut['plot_script'],
+                plot_div=bokehOut['plot_div'],
+                js_resources=bokehOut['js_resources'],
+                css_resources=bokehOut['css_resources'],
+                autorefresh=True
+            )
+        else: 
+            # using the dashboard html here
+            # probably want to standardize the wrapping for the bokeh plots
+            html = render_template(
+                'dashboard.html',
+                emptyDbMessage = "Empty Database"
+                )
+
         return html
     
     # responds to our microcontroller sending temperature data

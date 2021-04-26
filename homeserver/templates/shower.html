@@ -1,12 +1,12 @@
 {% extends 'base.html' %}
 
 {% block head %}
-    <!-- Bokeh resources -->
-    {% if js_resources %}
-        {{ js_resources |indent(4)|safe }}
-        {{ css_resources|indent(4)|safe }}
-        {{ plot_script  |indent(4)|safe }}
-    {% endif %}
+  <!-- Bokeh resources -->
+  {% if js_resources %}
+    {{ js_resources |indent(4)|safe }}
+    {{ css_resources|indent(4)|safe }}
+    {{ plot_script  |indent(4)|safe }}
+  {% endif %}
 {% endblock %}
 
 {% block title %}Shower{% endblock %}
@@ -14,8 +14,8 @@
 {# {% block header %}<h1>Shower</h1>{% endblock %} #}
 
 {% block content %}
-    <!-- Bokeh plot -->
-    {% if plot_div %}
-        {{ plot_div|indent(4)|safe }}
-    {% endif %}
+  <!-- Bokeh plot -->
+  {% if plot_div %}
+    {{ plot_div|indent(4)|safe }}
+  {% endif %}
 {% endblock %}
